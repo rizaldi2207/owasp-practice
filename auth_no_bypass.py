@@ -4,7 +4,10 @@ import jwt
 import datetime
 from flask import Flask, request, make_response, jsonify, session, render_template
 from flask_cors import CORS
+import socket
 
+hostname = socket.gethostname()
+ipadd = socket.gethostbyname(hostname)
 
 jwt_secret = 'FfUMdDbTrWqaKGucvcmI9jyXdGkt7QDftEQzkGT11eA'
 
@@ -96,6 +99,14 @@ def index():
 def home():
     return render_template('home.html')
 
+@app.route('/charts', methods=['GET'])
+def charts():
+    return render_template('charts.html')
+
+@app.route('/tables', methods=['GET'])
+def tables():
+    return render_template('tables.html')
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -166,6 +177,6 @@ def logout():
 
 if __name__ == '__main__':
     create_table()
-    app.run(host='192.168.119.132', port=5000, ssl_context='adhoc', debug=True)
+    app.run(host=ipadd, port=5000, ssl_context='adhoc', debug=True)
 
-             
+#192.168.119.132             

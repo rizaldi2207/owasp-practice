@@ -110,7 +110,7 @@
 
     <!-- Custom scripts -->
     <script type="text/javascript">
-        const HostURL = 'https://192.168.119.132:5000';
+        const HostURL = location.host;
         function login() {
           //let LoginForm = document.forms['loginform'];
           let username = document.getElementById("exampleInputEmail").value;
@@ -124,7 +124,7 @@
                   "password": password
           }
   
-          fetch(HostURL + '/login', {
+          fetch('/login', {
                   method: 'POST',
                   mode: 'cors',
                   headers: {
@@ -142,7 +142,7 @@
           let blockMessageTemplate = document.getElementById('template-submitBlockMessage').content.cloneNode(true);
           let alertMessage = blockMessageTemplate.querySelector('.alert');
           if (msg['status'] == 200) {
-              location.replace(HostURL + '/home');
+              location.replace('/home');
           } else {
               textNode = document.createTextNode(msg['message']);
               alertMessage.classList.add('alert-danger');

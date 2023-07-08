@@ -122,14 +122,14 @@
 
             <!-- Nav Item - Charts -->
             <li class="nav-item">
-                <a class="nav-link" href="charts.html">
+                <a class="nav-link" href="{{url_for('charts')}}">
                     <i class="fas fa-fw fa-chart-area"></i>
                     <span>Charts</span></a>
             </li>
 
             <!-- Nav Item - Tables -->
             <li class="nav-item">
-                <a class="nav-link" href="tables.html">
+                <a class="nav-link" href="{{url_for('tables')}}">
                     <i class="fas fa-fw fa-table"></i>
                     <span>Tables</span></a>
             </li>
@@ -756,10 +756,10 @@
 
     <!-- custom script -->
     <script>
-        const HostURL = 'https://192.168.119.132:5000';
+        const HostURL = location.hostname;
         getuser();
         function getuser(){
-            return fetch(HostURL + '/protected', {
+            return fetch('/protected', {
             method: 'GET',
             mode: 'cors'
         })
