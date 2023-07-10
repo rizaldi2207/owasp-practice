@@ -2,7 +2,11 @@ import sqlite3
 import secrets
 import jwt
 import datetime
-from flask import Flask, request, make_response, jsonify, session
+from flask import Flask, request, make_response, jsonify, session, render_template
+import socket
+
+hostname = socket.gethostname()
+ipadd = socket.gethostbyname(hostname)
 
 jwt_secret = 'FfUMdDbTrWqaKGucvcmI9jyXdGkt7QDftEQzkGT11eA'
 
@@ -81,6 +85,22 @@ class User:
             return User(user_data[1], user_data[2], user_data[3], user_data[4], user_data[5], user_data[6])
         return None
 
+@app.route('/', methods=['GET'])
+def index():
+     return render_template('login.html')
+
+@app.route('/home', methods=['GET'])
+def home():
+    return render_template('home.html')
+
+@app.route('/charts', methods=['GET'])
+def charts():
+    return render_template('charts.html')
+
+@app.route('/tables', methods=['GET'])
+def tables():
+    return render_template('tables.html')
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -144,4 +164,4 @@ def protected():
 
 if __name__ == '__main__':
     create_table()
-    app.run(host='192.168.119.132', port=5000, ssl_context='adhoc', debug=True)
+    app.run(host=ipadd, port=5000, ssl_context='adhoc', debug=True)
