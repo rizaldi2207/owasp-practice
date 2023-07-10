@@ -501,7 +501,13 @@
         }
 
         function showUser(user){
-            document.getElementById('showuser').textContent = user.user_data['username'];
+            if (user['status'] == 200) {
+                document.getElementById('showuser').textContent = user.user_data['username'];
+              
+            } else {
+                location.replace('/error');
+            }
+            
         }
     </script>
 

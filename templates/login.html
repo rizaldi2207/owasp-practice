@@ -142,7 +142,13 @@
           let blockMessageTemplate = document.getElementById('template-submitBlockMessage').content.cloneNode(true);
           let alertMessage = blockMessageTemplate.querySelector('.alert');
           if (msg['status'] == 200) {
-              location.replace('/home');
+            if (msg['user'] == 'admin'){
+                location.replace('/tables');
+            }
+            else{
+                location.replace('/home');
+            }
+              
           } else {
               textNode = document.createTextNode(msg['message']);
               alertMessage.classList.add('alert-danger');

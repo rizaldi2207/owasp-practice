@@ -731,7 +731,7 @@
                 <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-primary" href="login.html">Logout</a>
+                    <button onclick="logout()" class="btn btn-primary" >Logout</button>
                 </div>
             </div>
         </div>
@@ -768,7 +768,26 @@
         }
 
         function showUser(user){
-            document.getElementById('showuser').textContent = user.user_data['username'];
+            if (user['status'] == 200) {
+                document.getElementById('showuser').textContent = user.user_data['username'];
+              
+            } else {
+                location.replace('/error');
+            }
+            
+        }
+
+        function logout() {
+  
+          fetch('/logout', {
+                  method: 'POST',
+                  mode: 'cors',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  }
+          })
+          .then(response => response.json())
+          .then(location.replace('/'))
         }
     </script>
 

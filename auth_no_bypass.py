@@ -105,7 +105,18 @@ def charts():
 
 @app.route('/tables', methods=['GET'])
 def tables():
-    return render_template('tables.html')
+    token = request.cookies.get('token')
+    decode = validate_jwt_token(token, jwt_secret)
+    if decode:
+        if decode['user_id']=='admin':
+            return render_template('tables.html')
+        else:
+            return render_template('404.html')
+    return render_template('404.html')
+
+@app.route('/error', methods=['GET'])
+def error():
+    return render_template('404.html')
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -133,7 +144,7 @@ def login():
         #session_id = secrets.token_hex(16)
         #session['session_id'] = session_id
         token = generate_jwt_token(user.username,jwt_secret, 2)
-        response  = make_response({'status': 200, 'message':'Login success'})
+        response  = make_response({'status': 200, 'message':'Login success', 'user':username})
         response.set_cookie('token', token)
 
         return response
@@ -147,10 +158,10 @@ def protected():
         decode = validate_jwt_token(token, jwt_secret)
         if decode:
             user = User.get_by_username(decode['user_id'])
-            return jsonify({'message': 'Access granted', 'token': token, 'user_data':{'username':user.username, 'firstname':user.firstname, 'phone':user.phone, 'address':user.address}})
+            return jsonify({'status':200, 'message': 'Access granted', 'token': token, 'user_data':{'username':user.username, 'firstname':user.firstname, 'phone':user.phone, 'address':user.address}})
         
         else:
-            return jsonify({'message': 'Unauthorized'}), 401
+            return jsonify({'status':401, 'message': 'Unauthorized'})
         #try:
             #payload = jwt.decode(token, secret_key_validated, algorithm=['HS256'])
 
