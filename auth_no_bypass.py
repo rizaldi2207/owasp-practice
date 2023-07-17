@@ -101,7 +101,14 @@ def home():
 
 @app.route('/charts', methods=['GET'])
 def charts():
-    return render_template('charts.html')
+    token = request.cookies.get('token')
+    decode = validate_jwt_token(token, jwt_secret)
+    if decode:
+        if decode['user_id']=='admin':
+            return render_template('charts.html')
+        else:
+            return render_template('404.html')
+    return render_template('404.html')
 
 @app.route('/tables', methods=['GET'])
 def tables():
