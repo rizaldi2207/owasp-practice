@@ -125,6 +125,10 @@ def tables():
 def error():
     return render_template('404.html')
 
+@app.route('/?', methods=['GET'])
+def unauthorize():
+    return render_template('401.html')
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
