@@ -78,7 +78,8 @@ class User:
     def get_by_id(id):
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user_data WHERE id=?", (id,))
+        #cursor.execute("SELECT * FROM user_data WHERE id=?", (id,))
+        cursor.execute(f'SELECT * FROM user_data WHERE id={id}')
         user_data = cursor.fetchone()
         conn.close()
         if user_data:
@@ -134,7 +135,7 @@ def login():
     
     return jsonify({'message': 'Invalid username or password'})
 
-@app.route('/protected', methods=['GET'])
+@app.route('/protected', methods=['GET','POST'])
 def protected():
     #if 'session_id' in session:
         #token = request.cookies.get('token')
