@@ -59,7 +59,8 @@ def escape_special_characters(text):
 
 # User model
 class User:
-    def __init__(self, username, password, firstname, lastname, phone, address):
+    def __init__(self, id, username, password, firstname, lastname, phone, address):
+        self.id = id
         self.username = username
         self.password = password
         self.firstname = firstname
@@ -67,15 +68,15 @@ class User:
         self.phone = phone
         self.address = address
 
-    def save(self):
+    @staticmethod
+    def save(username, password, firstname, lastname, phone, address):
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
         cursor.execute("INSERT INTO user_data (username, password, first, last, phone, address) VALUES (?, ?, ?, ?, ?, ?)",
-                       (self.username, self.password, self.firstname, self.lastname, self.phone, self.address))
+                       (username, password, firstname, lastname, phone, address))
         conn.commit()
         conn.close()
 
-    @staticmethod
     def get_by_username(username):
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
@@ -83,7 +84,7 @@ class User:
         user_data = cursor.fetchone()
         conn.close()
         if user_data:
-            return User(user_data[1], user_data[2], user_data[3], user_data[4], user_data[5], user_data[6])
+            return User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5], user_data[6])
         return None
     def get_by_id(id):
         data = escape_special_characters(id)
@@ -94,7 +95,7 @@ class User:
         user_data = cursor.fetchone()
         conn.close()
         if user_data:
-            return User(user_data[1], user_data[2], user_data[3], user_data[4], user_data[5], user_data[6])
+            return User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5], user_data[6])
         return None
 
 @app.route('/', methods=['GET'])
@@ -124,8 +125,7 @@ def register():
     address = data['address']
     if User.get_by_username(username):
         return jsonify({'message': 'Username already exists'})
-    user = User(username, password, firstname, lastname, phone, address)
-    user.save()
+    User.save(username, password, firstname, lastname, phone, address)
     return jsonify({'message':'Berhasil Register'})
 
 @app.route('/login', methods=['POST'])
@@ -139,7 +139,7 @@ def login():
         #session_id = secrets.token_hex(16)
         #session['session_id'] = session_id
         token = generate_jwt_token(user.username,jwt_secret)
-        response  = make_response({'status': 200, 'message':'Login success'})
+        response  = make_response({'status': 200, 'message':'Login success', 'id':user.id})
         response.set_cookie('token', token)
 
         return response
@@ -153,7 +153,9 @@ def protected():
     if decode:
         user_id = request.args.get('id') 
         user = User.get_by_id(user_id)
-        return jsonify({'message': 'Access granted', 'user_data':{'username':user.username, 'firstname':user.firstname, 'phone':user.phone, 'address':user.address}})
+        if user.username == decode['user_id']:
+            return jsonify({'message': 'Access granted', 'user_data':{'username':user.username, 'firstname':user.firstname, 'phone':user.phone, 'address':user.address}})
+        return jsonify({'status':401, 'message': 'Unauthorized'})
     else:
         return jsonify({'status':401, 'message': 'Unauthorized'})
 
