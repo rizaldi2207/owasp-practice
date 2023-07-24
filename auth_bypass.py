@@ -87,11 +87,17 @@ class User:
             return User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4], user_data[5], user_data[6])
         return None
     def get_by_id(id):
+        
+        #escaping special character
         data = escape_special_characters(id)
         conn = sqlite3.connect(DB_NAME)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM user_data WHERE id=? LIMIT 1", (id,))
-        #cursor.execute(f'SELECT * FROM user_data WHERE id={id}')
+        
+        #Bind Parameter/Prepare Parameter
+        #cursor.execute("SELECT * FROM user_data WHERE id=? LIMIT 1", (data,))
+
+        #No Validation/Sanitation
+        cursor.execute(f'SELECT * FROM user_data WHERE id={data}')
         user_data = cursor.fetchone()
         conn.close()
         if user_data:
@@ -141,11 +147,14 @@ def login():
     
     return jsonify({'message': 'Invalid username or password'})
 
-@app.route('/protected', methods=['GET','POST'])
+@app.route('/protected', methods=['GET'])
 def protected():
     user_id = request.args.get('id') 
-    user = User.get_by_id(user_id)
-    return jsonify({'message': 'Access granted', 'user_data':{'username':user.username, 'firstname':user.firstname, 'phone':user.phone, 'address':user.address}})
+    try:
+        user = User.get_by_id(user_id)
+        return jsonify({'message': 'Access granted', 'user_data':{'username':user.username, 'firstname':user.firstname, 'phone':user.phone, 'address':user.address}})
+    except:
+        return jsonify({'message':'Invalid Request', 'status code':400}), 400
 
 @app.route('/logout', methods=['POST'])
 def logout():
